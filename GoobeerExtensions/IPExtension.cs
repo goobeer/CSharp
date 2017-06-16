@@ -47,17 +47,24 @@ public static class IPAddressExtension
             {
                 return result;
             }
-            byte[] startIPBytes = start.GetAddressBytes(), endIPBytes = end.GetAddressBytes();
-            StringBuilder sbIPStart = new StringBuilder();
-            StringBuilder sbIPEnd = new StringBuilder();
-            for (int i = 0; i < startIPBytes.Count(); i++)
-            {
-                sbIPStart.AppendFormat("{0}", startIPBytes[i] < 10 ? "00" + startIPBytes[i].ToString() : (startIPBytes[i] < 100 ? "0" + startIPBytes[i] : startIPBytes[i].ToString()));
-
-                sbIPEnd.AppendFormat("{0}", endIPBytes[i] < 10 ? "00" + endIPBytes[i].ToString() : (endIPBytes[i] < 100 ? "0" + endIPBytes[i] : endIPBytes[i].ToString()));
-            }
-            result = (Convert.ToInt64(sbIPStart.ToString()) - Convert.ToInt64(sbIPEnd.ToString())) > 0 ? 1 : -1;
+            result = (start.ToInt()-end.ToInt()) > 0 ? 1 : -1;
             return result;
+        }
+
+        public static Int64 ToInt(this IPAddress ip)
+        {
+            var ipBytes = ip.GetAddressBytes();
+            string ipBinary = string.Empty;
+            for (int i = 0; i < ipBytes.Count(); i++)
+            {
+                var binaryStr = Convert.ToString(ipBytes[i], 2);
+                while (binaryStr.Length!=8)
+                {
+                    binaryStr = "0" + binaryStr;
+                }
+                ipBinary += binaryStr;
+            }
+            return Convert.ToInt64(ipBinary, 2);
         }
 
         public static List<string> GenerateIPList(this IPAddress start, IPAddress end)
